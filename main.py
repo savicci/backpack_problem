@@ -1,5 +1,6 @@
 from copy import copy
 from typing import List, Tuple
+from matplotlib import pyplot
 
 from bitarray import bitarray
 import numpy as np
@@ -8,9 +9,9 @@ Genome = bitarray
 Population = List[Genome]
 
 # global values
-POPULATION_SIZE = 10
+POPULATION_SIZE = 20
 GENOME_LENGTH = 100
-MAX_GENERATIONS = 100
+MAX_GENERATIONS = 1000
 CARRY_FACTOR = 2 / 3
 MIN_WEIGHT_BOUND = 10
 MAX_WEIGHT_BOUND = 200
@@ -94,8 +95,13 @@ if __name__ == '__main__':
     population = generate_population(POPULATION_SIZE, GENOME_LENGTH)
     items, carry_limit = generate_items(GENOME_LENGTH, MIN_WEIGHT_BOUND, MAX_WEIGHT_BOUND)
 
+    generation = 0
+    best_fitness_per_generation = []
+
     # evolve
     for generation_num in range(MAX_GENERATIONS):
+        generation += 1
+
         # crossover
         next_generation_candidates = crossover(population)
 
@@ -109,14 +115,23 @@ if __name__ == '__main__':
         population = sorted(population, key=lambda genome: fitness(genome, items, carry_limit), reverse=True)
 
         current_best_fitness = fitness(population[0], items, carry_limit)
-        print(current_best_fitness)
 
+        best_fitness_per_generation.append(current_best_fitness)
         if current_best_fitness == carry_limit:
             break
 
+    # final results
     population = sorted(population, key=lambda genome: fitness(genome, items, carry_limit), reverse=True)
 
-
-    print('Finished in {} generations', generation_num)
+    # summary
+    print('Finished in {} generations', generation)
     print('Carry limit: ', carry_limit)
     print('Best solution: ', fitness(population[0], items, carry_limit))
+
+    # plot best solutions per generation
+    x = np.arange(0, generation)
+    carry_limits = np.empty(generation)
+    carry_limits.fill(carry_limit)
+    pyplot.plot(x, best_fitness_per_generation, 'b')
+    pyplot.plot(x, carry_limits, 'r')
+    pyplot.show()
