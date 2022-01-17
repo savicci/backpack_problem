@@ -15,6 +15,7 @@ MAX_GENERATIONS = 1000
 CARRY_FACTOR = 2 / 3
 MIN_WEIGHT_BOUND = 10
 MAX_WEIGHT_BOUND = 200
+FITNESS_CHANGE_BOUND = 200
 
 
 def generate_population(size: int, genome_lenth: int) -> Population:
@@ -91,6 +92,18 @@ def mutation(population, probability: float = 0.5):
             genome.invert(np.random.randint(0, len(genome)))
 
 
+def is_not_improving(best_fitness_per_generation: List[int]) -> bool:
+    if len(best_fitness_per_generation) < FITNESS_CHANGE_BOUND:
+        return False
+
+    last_element = best_fitness_per_generation[-1]
+
+    for element in best_fitness_per_generation[-FITNESS_CHANGE_BOUND:]:
+        if last_element != element:
+            return False
+    return True
+
+
 if __name__ == '__main__':
     population = generate_population(POPULATION_SIZE, GENOME_LENGTH)
     items, carry_limit = generate_items(GENOME_LENGTH, MIN_WEIGHT_BOUND, MAX_WEIGHT_BOUND)
@@ -120,11 +133,16 @@ if __name__ == '__main__':
         if current_best_fitness == carry_limit:
             break
 
+        # check if any improvement on last x iterations
+        if is_not_improving(best_fitness_per_generation):
+            print('Best fitnesses has not changed since {} generations'.format(FITNESS_CHANGE_BOUND))
+            break
+
     # final results
     population = sorted(population, key=lambda genome: fitness(genome, items, carry_limit), reverse=True)
 
     # summary
-    print('Finished in {} generations', generation)
+    print('Finished in {} generations'.format(generation))
     print('Carry limit: ', carry_limit)
     print('Best solution: ', fitness(population[0], items, carry_limit))
 
