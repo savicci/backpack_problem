@@ -91,9 +91,7 @@ def tournament_selection(candidates: Population, items: List[int], carry_limit: 
 def roulette_selection(candidates: Population, items: List[int], carry_limit: int) -> Population:
     fitnesses = [fitness(pretendent, items, carry_limit) for pretendent in candidates]
 
-    next_gen_population = random.choices(candidates, weights=fitnesses, k=int(len(candidates) / 2))
-    print(len(next_gen_population))
-    return next_gen_population
+    return random.choices(candidates, weights=fitnesses, k=int(len(candidates) / 2))
 
 
 def elitism_selection(candidates: Population, items: List[int], carry_limit: int) -> Population:
@@ -150,8 +148,11 @@ if __name__ == '__main__':
         # mutation
         mutation(population)
 
-        # selection
-        population = get_best_selection(next_generation_candidates, items, carry_limit)
+        # selection (only one should be uncommented at once)
+        population = tournament_selection(next_generation_candidates, items, carry_limit)
+        # population = roulette_selection(next_generation_candidates, items, carry_limit)
+        # population = elitism_selection(next_generation_candidates, items, carry_limit)
+        # population = get_best_selection(next_generation_candidates, items, carry_limit)
 
         # check if found solution is best possible
         population = sorted(population, key=lambda genome: fitness(genome, items, carry_limit), reverse=True)
