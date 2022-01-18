@@ -224,20 +224,20 @@ if __name__ == '__main__':
 ### Podsumowanie
 Wyniki pokazują, że selekcja koła ruletki niekoniecznie nadaje się dobrze do rozwiązania tego typu problemu. Wartości zwłaszcza na początku mogą być zbliżone, przez co szansa na wylosowanie gorszego z rozwiązań jest niewiele mniejsza niż ta na wylosowanie lepszego.
 Dodatkowo losowość może sprawić, że zgubimy lepsze rozwiązanie po drodze, co zwłaszcza widać na poniższym screenie
- ![Selekcja koła ruletki](roulette.png)
+ ![Selekcja koła ruletki](images/roulette.png)
 
 Przed utratą najlepszych rozwiązań zabezpiecza nas natomiast selekcja elitystyczna. Zawsze zapisujemy w niej kilka najlepiej przystosowanych genomów. Poniżej screen z przykładowej zbieżności.
-![Selekcja elitystyczna](elitism.png)
+![Selekcja elitystyczna](images/elitism.png)
 
 W selekcji turniejowej mierzą się dwa losowe genomy i lepiej przystowany z nich przechodzi do następnej generacji. Jest to pewna zaleta, bo szybko eliminujemy najgorsze rozwiązania.
 Metoda ta ma jednak wadę. Gdy przykładowo w jednym turnieju mierzą się dwa najbardziej przystosowe genomy jeden z nich musi odpaść, przez co tracimy dobre rozwiązanie z potencjałem na lepsze krzyżowanie.
 Z drugiej strony w turnieju mogą się mierzyć dwa najgorzej przystosowane genomy i po walce zostajemy z lepszym genomem, jednak nadal stosunkowo kiepskim w porównaniu do pozostałych.
-![Selekcja turniejowa](tournament.png)
+![Selekcja turniejowa](images/tournament.png)
 
 Teoretycznie najlepszym rozwiązaniem w tym przypadku jest posortowanie populacji od najbardziej przystosowanego i wybranie pierwszej połowy. Musimy jednak pamiętać, że
 dla dużej populacji sortowanie może również zająć dużo czasu. 
-![Selekcja najlepszych](best_half.png)
+![Selekcja najlepszych](images/best_half.png)
 
 Innym wnioskiem jest, że dobranie algorytmu jak i jego zbieżność mocno zależy od dobranych parametrów wielkości plecaka, ilości przedmiotów i wielkości populacji.
 Bardzo częstym przypadkiem było to, że algorytm znajdował rozwiązanie potencjalnie najlepsze ale jednak nie idealne (które może nie istnieć), dlatego dobrą praktyką jest dodawanie warunków stopu.
-![Zbieżność rozwiązania](convergence.png)
+![Zbieżność rozwiązania](images/convergence.png)
