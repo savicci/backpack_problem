@@ -1,3 +1,4 @@
+import random
 from copy import copy
 from typing import List, Tuple
 from matplotlib import pyplot
@@ -16,6 +17,8 @@ CARRY_FACTOR = 2 / 3
 MIN_WEIGHT_BOUND = 10
 MAX_WEIGHT_BOUND = 200
 FITNESS_CHANGE_BOUND = 200
+
+ELITISM_SELECTION_PERCENTAGE = int(POPULATION_SIZE * 0.2)  # 20% of the best individuals selected for reproduction
 
 
 def generate_population(size: int, genome_lenth: int) -> Population:
@@ -85,6 +88,32 @@ def tournament_selection(candidates: Population, items: List[int], carry_limit: 
     return next_gen_population
 
 
+def roulette_selection(candidates: Population, items: List[int], carry_limit: int) -> Population:
+    fitnesses = [fitness(pretendent, items, carry_limit) for pretendent in candidates]
+
+    next_gen_population = random.choices(candidates, weights=fitnesses, k=int(len(candidates) / 2))
+    print(len(next_gen_population))
+    return next_gen_population
+
+
+def elitism_selection(candidates: Population, items: List[int], carry_limit: int) -> Population:
+    next_gen_population = []
+    sorted_candidates = sorted(candidates, key=lambda genome: fitness(genome, items, carry_limit), reverse=True)
+
+    # pick some best members
+    next_gen_population.extend(sorted_candidates[0:ELITISM_SELECTION_PERCENTAGE])
+
+    # with rest we can do other selection like roulette_selection
+    next_gen_population.extend(roulette_selection(candidates[ELITISM_SELECTION_PERCENTAGE:], items, carry_limit))
+
+    return next_gen_population
+
+
+def get_best_selection(candidates: Population, items: List[int], carry_limit: int) -> Population:
+    return sorted(candidates, key=lambda genome: fitness(genome, items, carry_limit), reverse=True)[
+           :int(len(candidates) / 2)]
+
+
 def mutation(population, probability: float = 0.5):
     for genome in population:
         if np.random.rand() >= probability:
@@ -122,7 +151,7 @@ if __name__ == '__main__':
         mutation(population)
 
         # selection
-        population = tournament_selection(next_generation_candidates, items, carry_limit)
+        population = get_best_selection(next_generation_candidates, items, carry_limit)
 
         # check if found solution is best possible
         population = sorted(population, key=lambda genome: fitness(genome, items, carry_limit), reverse=True)
@@ -152,4 +181,7 @@ if __name__ == '__main__':
     carry_limits.fill(carry_limit)
     pyplot.plot(x, best_fitness_per_generation, 'b')
     pyplot.plot(x, carry_limits, 'r')
+    pyplot.xlabel('Generation number')
+    pyplot.ylabel('Fitness')
+    pyplot.title('Algorithm\'s evolution')
     pyplot.show()
